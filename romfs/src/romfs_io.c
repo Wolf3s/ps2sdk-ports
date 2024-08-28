@@ -27,7 +27,9 @@ int 		__sz[_NFILE];                 //size  of  file from romfs
 int 		__offset[_NFILE];             //offset  ... 
 unsigned char *(__dataptr[_NFILE]);  	      //datptr ... 
 
+extern int romdisk_mount(const void *img);
 
+unsigned char romdisk_start[];
 
 static int rio_initialized = 0;
 
@@ -48,7 +50,7 @@ void rioInit()
 			__dataptr[i] = 0;
 		}
 		// mount the rom image
-		romdisk_mount(romdisk_start);
+		romdisk_mount(&romdisk_start);
 		printf ("romdisk initialized & mounted!\n");
 		rio_initialized =1;
 	}	
