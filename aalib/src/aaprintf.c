@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include "aalib.h"
-int aa_printf(aa_context *c, int x, int y, int attr, char *fmt, ...)
+#include "aaint.h"
+int aa_printf(aa_context *c, int x, int y, enum aa_attribute attr, __AA_CONST char *fmt, ...)
 {
   va_list args;
   char buf[1025];

@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include "aalib.h"
+#include "aaint.h"
 
 #define HIDEMOUSE if(!hidden&&cursor&&c->mousedriver!=NULL&&(c->mousedriver->flags&AA_HIDECURSOR)) \
 	   aa_hidemouse(c),hidden=1;

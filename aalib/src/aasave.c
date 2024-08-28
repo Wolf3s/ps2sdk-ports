@@ -2,25 +2,26 @@
 #include <string.h>
 #include <stdlib.h>
 #include "aalib.h"
+#include "aaint.h"
 
 #define NORMALPRINTS { "%s", "%s", "%s", "%s", "%s", }
 #define NONE { "", "", "", "", "", }
 
-static char *html_escapes[] =
+static __AA_CONST char * __AA_CONST html_escapes[] =
 {"<", "&lt;", ">", "&gt;", "&", "&amp;", NULL};
-static char *html_alt_escapes[] =
+static __AA_CONST char * __AA_CONST html_alt_escapes[] =
 {"<", "&lt;", ">", "&gt;", "&", "&amp;", "\"", "&quot;", NULL};
 #ifdef VYHEN_SUPPORT
-static char *vyhen_escapes[] =
+static __AA_CONST char * __AA_CONST vyhen_escapes[] =
 {"|", "||","~", "~~", NULL};
 #endif
 
-static char *irc_escapes[] =
+__AA_CONST static char * __AA_CONST irc_escapes[] =
 {"@", "@@", NULL};
 
-static char *generate_filename(char *template, char *result, int x, int y, int pages, char *extension);
+static char *generate_filename(__AA_CONST char *template, char *result, int x, int y, int pages, __AA_CONST char *extension);
 
-struct aa_format aa_nhtml_format =
+__AA_CONST struct aa_format aa_nhtml_format =
 {
     79, 36,
     79, 36,
@@ -47,7 +48,7 @@ struct aa_format aa_nhtml_format =
     },
     html_escapes
 };
-struct aa_format aa_html_format =
+__AA_CONST struct aa_format aa_html_format =
 {
     79, 25,
     79, 25,
@@ -74,7 +75,7 @@ struct aa_format aa_html_format =
     },
     html_escapes
 };
-struct aa_format aa_ansi_format =
+__AA_CONST struct aa_format aa_ansi_format =
 {
     80, 25,
     80, 25,
@@ -102,7 +103,7 @@ struct aa_format aa_ansi_format =
     NULL
 };
 #ifdef VYHEN_SUPPORT
-struct aa_format aa_vyhen_format =
+__AA_CONST struct aa_format aa_vyhen_format =
 {
     80, 30,
     80, 30,
@@ -130,7 +131,7 @@ struct aa_format aa_vyhen_format =
     vyhen_escapes
 };
 #endif
-struct aa_format aa_text_format =
+__AA_CONST struct aa_format aa_text_format =
 {
     80, 25,
     80, 25,
@@ -147,7 +148,7 @@ struct aa_format aa_text_format =
     NONE,
     NULL
 };
-struct aa_format aa_more_format =
+__AA_CONST struct aa_format aa_more_format =
 {
     80, 25,
     80, 25,
@@ -166,7 +167,7 @@ struct aa_format aa_more_format =
     NONE,
     NULL
 };
-struct aa_format aa_hp_format =
+__AA_CONST struct aa_format aa_hp_format =
 {
     130 * 2, 64 * 2 - 1,
     130, 64 * 2 - 1,
@@ -183,7 +184,7 @@ struct aa_format aa_hp_format =
     NONE,
     NULL
 };
-struct aa_format aa_hp2_format =
+__AA_CONST struct aa_format aa_hp2_format =
 {
     80 * 2, 64 - 1,
     80, 64 - 1,
@@ -200,7 +201,7 @@ struct aa_format aa_hp2_format =
     NONE,
     NULL
 };
-struct aa_format aa_irc_format =
+__AA_CONST struct aa_format aa_irc_format =
 {
     70, 25,
     70, 25,
@@ -227,7 +228,7 @@ struct aa_format aa_irc_format =
     },
     NULL
 };
-struct aa_format aa_zephyr_format =
+__AA_CONST struct aa_format aa_zephyr_format =
 {
     70, 25,
     70, 25,
@@ -254,7 +255,7 @@ struct aa_format aa_zephyr_format =
     },
     irc_escapes
 };
-struct aa_format aa_roff_format =
+__AA_CONST struct aa_format aa_roff_format =
 {
     70, 25,
     70, 25,
@@ -282,7 +283,7 @@ struct aa_format aa_roff_format =
     irc_escapes
 };
 
-struct aa_format aa_html_alt_format =
+__AA_CONST struct aa_format aa_html_alt_format =
 {
     79, 25,
     79, 25,
@@ -312,7 +313,7 @@ struct aa_format aa_html_alt_format =
     html_alt_escapes
 };
 
-struct aa_format *aa_formats[] =
+__AA_CONST struct aa_format * __AA_CONST aa_formats[] =
 {
 #ifdef VYHEN_SUPPORT
     &aa_vyhen_format,
@@ -331,13 +332,13 @@ struct aa_format *aa_formats[] =
     NULL
 };
 
-struct aa_driver save_d;
+__AA_CONST struct aa_driver save_d;
 #define FORMAT ((struct aa_savedata *)c->driverdata)->format
 #define DATA ((struct aa_savedata *)c->driverdata)
 
-static char **build_conversions(char **in, char **conv)
+__AA_CONST static char **build_conversions(__AA_CONST char * __AA_CONST *in, __AA_CONST char **conv)
 {
-    char c;
+    unsigned char c;
 
     memset(conv, 0, sizeof(char *) * 256);
 
@@ -351,10 +352,10 @@ static char **build_conversions(char **in, char **conv)
     return conv;
 }
 
-static int save_init(struct aa_hardware_params *p, void *none,
+static int save_init(__AA_CONST struct aa_hardware_params *p, __AA_CONST void *none,
 		     struct aa_hardware_params *dest, void **data)
 {
-    struct aa_savedata *d = (struct aa_savedata *) none;
+    __AA_CONST struct aa_savedata *d = (__AA_CONST struct aa_savedata *) none;
     static struct aa_hardware_params def;
     *data = (void *) malloc(sizeof(struct aa_savedata));
     memcpy(*data, d, sizeof(struct aa_savedata));
@@ -381,7 +382,7 @@ static void save_gotoxy(aa_context * c, int x, int y)
 static int lastattr;
 static FILE *f;
 static aa_context *c;
-static void stop_tag()
+static void stop_tag(void)
 {
     if (lastattr != -1)
 	fputs(FORMAT->ends[lastattr], f);
@@ -394,7 +395,7 @@ static void start_tag(int attr)
     lastattr = attr;
     fputs(FORMAT->begin[lastattr], f);
 }
-static void encodechar(unsigned char attr, unsigned char ch, char **conversions)
+static void encodechar(unsigned char attr, unsigned char ch, __AA_CONST char **conversions)
 {
     char chr[2];
     if (FORMAT->flags & AA_NORMAL_SPACES && ch == ' ' && (attr != AA_REVERSE))
@@ -413,7 +414,7 @@ static void encodechar(unsigned char attr, unsigned char ch, char **conversions)
     }
 }
 
-static void savearea(int x1, int y1, int x2, int y2, char **conversions)
+static void savearea(int x1, int y1, int x2, int y2, __AA_CONST char **conversions)
 {
     int x, y;
     fputs(FORMAT->head, f);
@@ -438,7 +439,7 @@ static void savearea(int x1, int y1, int x2, int y2, char **conversions)
 static void save_flush(aa_context * c1)
 {
     char fname[4096];
-    char *conversions[256];
+    __AA_CONST char *conversions[256];
     c = c1;
     build_conversions(FORMAT->conversions, conversions);
     if (FORMAT->flags & AA_USE_PAGES) {
@@ -492,10 +493,10 @@ static void save_flush(aa_context * c1)
  * blahX_Y.txt or blah.txt
  * Also avoided memory owerflows. 
  */
-static char *generate_filename(char *template, char *result, int x, int y, int pages, char *extension)
+static char *generate_filename(__AA_CONST char *template, char *result, int x, int y, int pages, __AA_CONST char *extension)
 {
     char *a;
-    char *b;
+    __AA_CONST char *b;
     char *end = result + 4090;
     b = template - 1, a = result - 1;
     while ((*++a = *++b)) {
@@ -546,7 +547,7 @@ static char *generate_filename(char *template, char *result, int x, int y, int p
 	    case 'e':
 		a--;
 		{
-		    char *e = extension - 1;
+		    __AA_CONST char *e = extension - 1;
 		    while ((*++a = *++e))
 			if (a >= end)
 			    break;
@@ -567,7 +568,7 @@ static char *generate_filename(char *template, char *result, int x, int y, int p
     return result;
 }
 
-struct aa_driver save_d =
+__AA_CONST struct aa_driver save_d =
 {
     "save", "Special driver for saving to files",
     save_init,

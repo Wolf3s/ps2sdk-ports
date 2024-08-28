@@ -1,0 +1,17 @@
+# ps2aalib
+# aalib ps2port by brice rouanet
+# tmator@gmail.com
+# GPL V2
+
+all :
+	$(MAKE) -C src all -f Makefile.ps2
+
+sample: all
+	$(MAKE) -C test all
+
+clean :
+	$(MAKE) -C src clean -f Makefile.ps2
+	$(MAKE) -C test clean
+
+install: all
+	$(MAKE) -C src install -f Makefile.ps2

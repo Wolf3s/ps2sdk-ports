@@ -1,13 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "aalib.h"
 #include "aaint.h"
 
 struct aa_hardware_params aa_defparams =
 {
-    &aa_font16, AA_NORMAL_MASK | AA_DIM_MASK | AA_BOLD_MASK
+    /*&aa_font16*/NULL, AA_NORMAL_MASK | AA_DIM_MASK | AA_BOLD_MASK
 };
 void aa_uninitmouse(struct aa_context *c)
 {
@@ -92,7 +91,7 @@ int aa_resize(aa_context * c)
 	c->params.maxheight = c->driverparams.maxheight;
     return 1;
 }
-aa_context *aa_init(struct aa_driver * driver, struct aa_hardware_params * defparams, void *driverdata)
+aa_context *aa_init(__AA_CONST struct aa_driver * driver, __AA_CONST struct aa_hardware_params * defparams, __AA_CONST void *driverdata)
 {
     struct aa_context *c;
     c = calloc(1, sizeof(*c));
@@ -110,9 +109,16 @@ aa_context *aa_init(struct aa_driver * driver, struct aa_hardware_params * defpa
     c->kbddriver = NULL;
     c->mousedriver = NULL;
     c->params.supported = c->driverparams.supported & defparams->supported;
-    c->params.font = c->driverparams.font;
+    if (defparams->font)
+    {
+	c->params.font = defparams->font;
+    }
+    else
+        c->params.font = c->driverparams.font;
     if (!c->params.font)
 	c->params.font = defparams->font;
+    if (!c->params.font)
+	c->params.font = &aa_font16;
     if (!c->params.supported)
 	c->params.supported = c->driverparams.supported;
     c->mulx = 2;
@@ -199,7 +205,7 @@ static void aa_invalidate(aa_context * c)
     c->filltable = NULL;
     c->parameters = NULL;
 }
-void aa_setfont(aa_context * c, struct aa_font *font)
+void aa_setfont(aa_context * c, __AA_CONST struct aa_font *font)
 {
     c->params.font = font;
     aa_invalidate(c);

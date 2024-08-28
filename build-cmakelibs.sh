@@ -128,6 +128,10 @@ $FETCH v1.7.3 https://github.com/hyperrealm/libconfig.git &
 
 $FETCH R_2_6_2 https://github.com/libexpat/libexpat.git &
 
+$FETCH 0.16.4 https://codeberg.org/tenacityteam/libmad.git &
+
+$FETCH 0.16.3 https://codeberg.org/tenacityteam/libid3tag.git &
+
 # wait for fetch jobs to finish
 wait
 
@@ -193,6 +197,9 @@ build_irx libsmb2 -DBUILD_IRX=1
 CFLAGS="-DHAVE_NEWLOCALE -DHAVE_USELOCALE -DHAVE_FREELOCALE" build_ee libconfig -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF
 
 CFLAGS="-Darc4random_buf=random -DHAVE_GETRANDOM" build_ee libexpat/expat -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF -DEXPAT_SHARED_LIBS=OFF -DEXPAT_BUILD_TOOLS=OFF
+
+build_ee libmad -DBUILD_SHARED_LIBS=OFF 
+build_ee libid3tag -DBUILD_SHARED_LIBS=OFF 
 
 # Finish
 cd ..

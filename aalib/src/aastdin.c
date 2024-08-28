@@ -5,11 +5,11 @@
 #include <setjmp.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <ps2ip.h>
 #ifdef GPM_MOUSEDRIVER
 #include <gpm.h>
 #endif
 #include "aalib.h"
+#include "aaint.h"
 static int iswaiting;
 static int __resized;
 #ifdef GPM_MOUSEDRIVER
@@ -88,7 +88,7 @@ static int stdin_getchar(aa_context * c1, int wait)
     if (c > 0 && c < 127 && c != 127)
 	return (c);
     switch (c) {
-#ifdef KEY_MOUDE
+#ifdef KEY_MOUSE
     case KEY_MOUSE:
 	return AA_MOUSE
 #endif
@@ -100,7 +100,7 @@ static int stdin_getchar(aa_context * c1, int wait)
 }
 
 
-struct aa_kbddriver kbd_stdin_d =
+__AA_CONST struct aa_kbddriver kbd_stdin_d =
 {
     "stdin", "Standard input keyboard driver 1.0",
     0,

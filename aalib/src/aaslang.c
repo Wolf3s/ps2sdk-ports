@@ -8,12 +8,13 @@
 #include <gpm.h>
 #endif
 #include "aalib.h"
-struct aa_driver slang_d;
+#include "aaint.h"
+__AA_CONST struct aa_driver slang_d;
 int __slang_is_up = 0;
 int __resized_slang = 0;
 static int uninitslang;
 
-static int slang_init(struct aa_hardware_params *p, void *none, struct aa_hardware_params *dest, void **params)
+static int slang_init(__AA_CONST struct aa_hardware_params *p,__AA_CONST  void *none, struct aa_hardware_params *dest, void **params)
 {
     struct aa_hardware_params def={NULL, AA_NORMAL_MASK | AA_BOLD_MASK | AA_REVERSE_MASK | AA_BOLDFONT_MASK | AA_DIM_MASK};
     *dest=def;
@@ -23,13 +24,17 @@ static int slang_init(struct aa_hardware_params *p, void *none, struct aa_hardwa
 	__slang_is_up = 1;
 	uninitslang = 1;
     }
-    if (!SLsmg_init_smg())
+    if (SLsmg_init_smg() != 0)
 	return 0;
     if (SLtt_Use_Ansi_Colors) {
 	dest->supported &= ~AA_BOLDFONT_MASK;
     }
     SLsmg_Display_Eight_Bit = 128;
     dest->supported |= AA_EIGHT;
+#ifdef GPM_MOUSEDRIVER
+    aa_recommendlowmouse("gpm");
+#endif
+    aa_recommendlowkbd ("linux");
     aa_recommendlowkbd("slang");
     return 1;
 }
@@ -45,7 +50,7 @@ static void slang_getsize(aa_context * c, int *width, int *height)
 {
     SLtt_get_screen_size();
     SLsmg_reset_smg();
-    if (!SLsmg_init_smg())
+    if (SLsmg_init_smg() != 0)
 	printf("Internal error!\n");
     SLtt_set_mono(AA_NORMAL, "normal", 0);
     SLtt_set_mono(AA_BOLD, "bold", SLTT_BOLD_MASK);
@@ -73,7 +78,7 @@ static void slang_setattr(aa_context * c, int attr)
 {
     SLsmg_set_color(attr);
 }
-static void slang_print(aa_context * c, char *text)
+static void slang_print(aa_context * c, __AA_CONST char *text)
 {
     SLsmg_write_string(text);
 }
@@ -92,7 +97,7 @@ static void slang_cursor(aa_context * c, int mode)
 
 
 
-struct aa_driver slang_d =
+__AA_CONST struct aa_driver slang_d =
 {
     "slang", "Slang driver 1.0",
     slang_init,

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "config.h"
 #include "aalib.h"
+#include "aaint.h"
 static int inparse;
 static void parseenv(struct aa_hardware_params *p, aa_renderparams * r);
 static void aa_remove(int i, int *argc, char **argv)
@@ -42,7 +43,6 @@ int aa_parseoptions(struct aa_hardware_params *p, aa_renderparams * r, int *argc
 		    !strcmp(argv[i], aa_fonts[y]->shortname)) {
 		    p->font = aa_fonts[y];
 		    aa_remove(i, argc, argv);
-		    i--;
 		    break;
 		}
 	    }
@@ -122,7 +122,7 @@ int aa_parseoptions(struct aa_hardware_params *p, aa_renderparams * r, int *argc
 	} else if (strcmp(argv[i], "-nodither") == 0) {
 	    aa_remove(i, argc, argv);
 	    i--;
-	    r->dither = 0;
+	    r->dither = AA_NONE;
 	} else if (strcmp(argv[i], "-floyd_steinberg") == 0) {
 	    aa_remove(i, argc, argv);
 	    i--;
@@ -299,7 +299,7 @@ static void parseenv(struct aa_hardware_params *p, aa_renderparams * r)
     if (env == NULL)
 	return;
     if (env[0]) {
-	for (i = 0; i < strlen(env) - 1; i++) {
+	for (i = 0; i < (int)strlen(env); i++) {
 	    int s;
 	    char stop = ' ';
 	    while (env[i] == ' ')
@@ -307,10 +307,10 @@ static void parseenv(struct aa_hardware_params *p, aa_renderparams * r)
 	    if (env[i] == '"')
 		i++, stop = '"';
 	    s = i;
-	    while (i < strlen(env) && env[i] != stop)
+	    while (env[i] != stop && env[i])
 		i++;
 	    if (i - s) {
-		argv1[argc] = argv[argc] = malloc(i - s);
+		argv1[argc] = argv[argc] = calloc(i - s + 1, 1);
 		strncpy(argv[argc], env + s, i - s);
 		argc++;
 		if (argc == 255)

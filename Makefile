@@ -2,11 +2,8 @@ LIBS := \
 	aalib\
 	cmakelibs\
 	libconfuse\
-	libid3tag\
 	libjpeg_ps2_addons\
-	libmad\
 	libtap\
-	libtiff\
 	lua\
 	madplay\
 	ps2stuff\
@@ -15,7 +12,7 @@ LIBS := \
 	romfs\
 	sdl\
 	sdlgfx\
-	sdlimag\
+	sdlimage\
 	sdlmixer\
 	sdlttf\
 	SIOCookie\
@@ -28,9 +25,6 @@ LIBS_SAMPLES := \
 # TODO: Broken samples
 # problem seems to be with the C strict mode
 # throwing warnings as errors
-#	sdl
-#	sdlgfx
-#	sdlmixer
 #	ode
 #	romfs
 
@@ -49,10 +43,10 @@ clean: $(addprefix clean-, $(LIBS))
 samples: $(addprefix sample-, $(LIBS_SAMPLES))
 
 aalib:
-	$(MAKE) -C $@
-	$(MAKE) -C $@ install
+	$(MAKE) -C $@ -f Makefile.ps2
+	$(MAKE) -C $@ install -f Makefile.ps2
 
-cmakelibs: ps2_drivers libtiff
+cmakelibs: ps2_drivers
 	./build-cmakelibs.sh
 
 clean-cmakelibs:
@@ -65,15 +59,7 @@ libconfuse:
 	$(MAKE) -C build/$@ all
 	$(MAKE) -C build/$@ install
 
-libid3tag: cmakelibs
-	$(MAKE) -C $@ all
-	$(MAKE) -C $@ install
-
 libjpeg_ps2_addons: cmakelibs
-	$(MAKE) -C $@ all
-	$(MAKE) -C $@ install
-
-libmad: cmakelibs
 	$(MAKE) -C $@ all
 	$(MAKE) -C $@ install
 
@@ -97,7 +83,7 @@ sample-lua:
 	$(MAKE) -C lua sample platform=PS2
 
 # depends on SjPCM sound library
-madplay: cmakelibs libid3tag libmad
+madplay: cmakelibs
 	$(MAKE) -C $@ all
 	$(MAKE) -C $@ install
 
@@ -137,7 +123,7 @@ sdlgfx: sdlimage
 	$(MAKE) -C $@
 	$(MAKE) -C $@ install
 
-sdlimage: cmakelibs libtiff sdl
+sdlimage: cmakelibs sdl
 	$(MAKE) -C $@
 	$(MAKE) -C $@ install
 

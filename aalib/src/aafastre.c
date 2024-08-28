@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "aalib.h"
+#include "aaint.h"
 #include "aamktabl.h"
 void aa_fastrender(aa_context * c, int x1, int y1, int x2, int y2)
 {

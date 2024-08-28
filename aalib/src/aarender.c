@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <math.h>
 #include "aalib.h"
+#include "aaint.h"
 #include "aamktabl.h"
 #include "config.h"
 aa_renderparams aa_defrenderparams =
 {0, 0, 1.0, AA_FLOYD_S, 0, 0};
 #define VAL (13)		/*maximum distance good for fill tables */
 #define pos(i1,i2,i3,i4) (((int)(i1)<<12)+((int)(i2)<<8)+((int)(i3)<<4)+(int)(i4))
-char *aa_dithernames[] =
+__AA_CONST char * __AA_CONST aa_dithernames[] =
 {
     "no dithering",
     "error-distribution",
@@ -25,10 +26,10 @@ aa_renderparams *aa_getrenderparams(void)
     *p = aa_defrenderparams;
     return (p);
 }
-#define MYLONG_MAX 0xffffffff     /*this is enought for me. */
+#define MYLONG_MAX 0xffffffffU     /*this is enought for me. */
 #define myrand() (state = ((state * 1103515245) + 12345) & MYLONG_MAX)
 
-void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, int x1, int y1, int x2, int y2)
+void aa_renderpalette(aa_context * c, __AA_CONST aa_palette palette, __AA_CONST aa_renderparams * p, int x1, int y1, int x2, int y2)
 {
     static int state;
     int x, y;
@@ -42,6 +43,9 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
     int cur = 0;
     int mval;
     int gamma = p->gamma != 1.0;
+
+    int randomval = p->randomval;
+    int dither = p->dither;
     aa_palette table;
     if (x2 < 0 || y2 < 0 || x1 > aa_scrwidth(c) || y1 > aa_scrheight(c))
 	return;
@@ -55,14 +59,14 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 	y1 = 0;
     if (c->table == NULL)
 	aa_mktable(c);
-    if (p->dither == AA_FLOYD_S) {
+    if (dither == AA_FLOYD_S) {
 	errors[0] = calloc(1, (x2 + 5) * sizeof(int));
 	if (errors[0] == NULL)
-	    p->dither = AA_ERRORDISTRIB;
+	    dither = AA_ERRORDISTRIB;
 	errors[0] += 3;
 	errors[1] = calloc(1, (x2 + 5) * sizeof(int));
 	if (errors[1] == NULL)
-	    free(errors[0]), p->dither = AA_ERRORDISTRIB;
+	    free(errors[0]), dither = AA_ERRORDISTRIB;
 	errors[1] += 3;
 	cur = 0;
     }
@@ -86,8 +90,8 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 	table[i] = y;
     }
     gamma = 0;
-    if (p->randomval)
-	gamma = p->randomval / 2;
+    if (randomval)
+	gamma = randomval / 2;
     mval = (c->parameters[c->filltable[255]].p[4]);
     for (y = y1; y < y2; y++) {
 	pos = 2 * y * wi;
@@ -100,10 +104,10 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 	    i4 = table[((((int) c->imagebuffer[pos + 1 + wi])))];
 	    if (gamma) {
 		i = myrand();
-		i1 += (i) % p->randomval - gamma;
-		i2 += (i >> 8) % p->randomval - gamma;
-		i3 += (i >> 16) % p->randomval - gamma;
-		i4 += (i >> 24) % p->randomval - gamma;
+		i1 += (i) % randomval - gamma;
+		i2 += (i >> 8) % randomval - gamma;
+		i3 += (i >> 16) % randomval - gamma;
+		i4 += (i >> 24) % randomval - gamma;
 		if ((i1 | i2 | i3 | i4) & (~255)) {
 		    if (i1 < 0)
 			i1 = 0;
@@ -123,7 +127,7 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 			i4 = 255;
 		}
 	    }
-	    switch (p->dither) {
+	    switch (dither) {
 	    case AA_ERRORDISTRIB:
 		esum = (esum + 2) >> 2;
 		i1 += esum;
@@ -145,7 +149,7 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 		}
 		break;
 	    }
-	    if (p->dither) {
+	    if (dither) {
 		esum = i1 + i2 + i3 + i4;
 		val = (esum) >> 2;
 		if ((abs(i1 - val) < VAL &&
@@ -204,7 +208,7 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 	    pos += 2;
 	    pos1++;
 	}
-	if (p->dither == AA_FLOYD_S) {
+	if (dither == AA_FLOYD_S) {
 	    if (x2 - 1 > x1)
 		errors[cur][x2 - 2] += (esum) >> 4;
 	    if (x2 > x1)
@@ -214,12 +218,12 @@ void aa_renderpalette(aa_context * c, aa_palette palette, aa_renderparams * p, i
 	    errors[cur ^ 1][-1] = 0;
 	}
     }
-    if (p->dither == AA_FLOYD_S) {
+    if (dither == AA_FLOYD_S) {
 	free(errors[0] - 3);
 	free(errors[1] - 3);
     }
 }
-void aa_render(aa_context * c, aa_renderparams * p, int x1, int y1, int x2, int y2)
+void aa_render(aa_context * c, __AA_CONST aa_renderparams * p, int x1, int y1, int x2, int y2)
 {
     int i;
     static aa_palette table;

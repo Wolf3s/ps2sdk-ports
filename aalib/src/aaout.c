@@ -1,5 +1,6 @@
 #include "aalib.h"
-void aa_puts(aa_context * c, int x, int y, int attr, char *s)
+#include "aaint.h"
+void aa_puts(aa_context * c, int x, int y, enum aa_attribute attr, __AA_CONST char *s)
 {
     char s1[10000];
     int pos, pos1;

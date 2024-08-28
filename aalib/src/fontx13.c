@@ -1,7 +1,7 @@
 #include "config.h"
 #include "aalib.h"
 
-unsigned char fontX13data[] =
+__AA_CONST unsigned char fontX13data[] =
 {
 
     0x00,
@@ -423,5 +423,5 @@ unsigned char fontX13data[] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-struct aa_font aa_fontX13 =
+__AA_CONST struct aa_font aa_fontX13 =
 {fontX13data, 13, "X 8x13 font", "X8x13"};

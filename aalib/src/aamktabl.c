@@ -19,14 +19,14 @@
 #define postoparams(pos,i1,i2,i3,i4) \
   ((i1)=(pos)>>12),((i2)=((pos)>>8)&15),((i3)=((pos)>>4)&15),((i4)=((pos))&15)
 
-int priority[]={4,5,3,2,1};
+static __AA_CONST int priority[]={4,5,3,2,1};
 
 unsigned short *aa_mktable(aa_context * c)
 {
     int i;
     int i1, i2, i3, i4;
     int sum, pos;
-    struct aa_font *currfont = c->params.font;
+    __AA_CONST struct aa_font *currfont = c->params.font;
     int supported = c->params.supported;
     unsigned short *next;
     int first = -1;
@@ -42,7 +42,7 @@ unsigned short *aa_mktable(aa_context * c)
     last = -1;
     for (i = 0; i < TABLESIZE; i++)
 	next[i] = i, table[i] = 0;
-    aa_calcparams(currfont, parameters, supported,c->params.dimmul, c->params.boldmul);
+    __aa_calcparams(currfont, parameters, supported,c->params.dimmul, c->params.boldmul);
 
     for (i = 0; i < NCHARS; i++) {
 	if (ALOWED(i, supported)) {

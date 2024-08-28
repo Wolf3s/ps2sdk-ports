@@ -1,5 +1,6 @@
 #include "aalib.h"
-int aa_initkbd(struct aa_context *c, struct aa_kbddriver *d, int mode)
+#include "aaint.h"
+int aa_initkbd(struct aa_context *c, __AA_CONST struct aa_kbddriver *d, int mode)
 {
     if (d->init(c, mode)) {
 	c->kbddriver = d;
@@ -7,7 +8,7 @@ int aa_initkbd(struct aa_context *c, struct aa_kbddriver *d, int mode)
     }
     return 0;
 }
-int aa_initmouse(struct aa_context *c, struct aa_mousedriver *d, int mode)
+int aa_initmouse(struct aa_context *c, __AA_CONST struct aa_mousedriver *d, int mode)
 {
     if (d->init(c, mode)) {
 	c->mousedriver = d;

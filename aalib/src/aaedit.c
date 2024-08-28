@@ -1,12 +1,13 @@
 #include <string.h>
 #include <ctype.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "aalib.h"
+#include "aaint.h"
 static void aa_editdisplay(struct aa_edit *e)
 {
     char s[1000];
     int i;
-    if (e->cursor > strlen(e->data))
+    if (e->cursor > (int)strlen(e->data))
 	e->cursor = strlen(e->data);
     if (e->cursor < e->printpos)
 	e->printpos = e->cursor;
@@ -93,7 +94,7 @@ void aa_editkey(struct aa_edit *e, int c)
     } else if (c == AA_RIGHT) {
 	e->cursor++;
 	e->clearafterpress = 0;
-	if (e->cursor > strlen(e->data))
+	if (e->cursor > (int)strlen(e->data))
 	    e->cursor = strlen(e->data);
 	aa_editdisplay(e);
     }

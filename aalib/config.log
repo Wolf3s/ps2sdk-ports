@@ -1,0 +1,28 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:584: checking for a BSD compatible install
+configure:637: checking whether build environment is sane
+configure:694: checking whether make sets ${MAKE}
+configure:740: checking for working aclocal
+configure:753: checking for working autoconf
+configure:766: checking for working automake
+configure:779: checking for working autoheader
+configure:792: checking for working makeinfo
+configure:812: checking host system type
+configure:833: checking target system type
+configure:882: checking for gcc
+configure:995: checking whether the C compiler (gcc  ) works
+configure:1011: gcc -o conftest    conftest.c  1>&5
+configure:1008:1: warning: return type defaults to 'int' [-Wimplicit-int]
+ 1008 | #line 1006 "configure"
+      | ^~~~
+configure:1037: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:1042: checking whether we are using GNU C
+configure:1070: checking whether gcc accepts -g
+configure:1171: checking build system type
+configure:1191: checking for ranlib
+configure:1230: checking for ld used by GCC
+configure:1292: checking if the linker (/usr/bin/ld) is GNU ld
+configure:1308: checking for BSD-compatible nm
+configure:1344: checking whether ln -s works

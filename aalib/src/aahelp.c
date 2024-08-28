@@ -1,6 +1,7 @@
 #include "config.h"
 #include "aalib.h"
-char *aa_help =
+#include "aaint.h"
+__AA_CONST char * __AA_CONST aa_help =
 "  -driver        select driver\n"
 "                  available drivers:"
 #ifndef __DJGPP__

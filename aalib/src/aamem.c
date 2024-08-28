@@ -1,7 +1,8 @@
 #include "config.h"
 #include "aalib.h"
+#include "aaint.h"
 
-static int mem_init(struct aa_hardware_params *p, void *none, struct aa_hardware_params *dest, void **params)
+static int mem_init(__AA_CONST struct aa_hardware_params *p,__AA_CONST  void *none, struct aa_hardware_params *dest, void **params)
 {
     struct aa_hardware_params def={NULL, AA_DIM_MASK | AA_REVERSE_MASK | AA_NORMAL_MASK | AA_BOLD_MASK | AA_EXTENDED};
     *dest=def;
@@ -21,7 +22,7 @@ static void mem_gotoxy(aa_context * c, int x, int y)
 {
 }
 
-struct aa_driver mem_d =
+__AA_CONST struct aa_driver mem_d =
 {
     "mem", "Dummy memory driver 1.0",
     mem_init,

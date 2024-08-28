@@ -1,8 +1,9 @@
-#include <malloc.h>
+#include <stdlib.h>
+#include <string.h>
 #include "config.h"
 #include "aalib.h"
-#include <string.h>
-struct aa_driver *aa_drivers[] =
+#include "aaint.h"
+__AA_CONST struct aa_driver * __AA_CONST aa_drivers[] =
 {
 #ifdef DJGPP
     &dos_d,
@@ -11,7 +12,7 @@ struct aa_driver *aa_drivers[] =
     &X11_d,
 #endif
 #ifdef LINUX_DRIVER
-//    &linux_d,
+    &linux_d,
 #endif
 #ifdef SLANG_DRIVER
     &slang_d,
@@ -22,12 +23,15 @@ struct aa_driver *aa_drivers[] =
 #ifdef OS2_DRIVER
     &os2vio_d,
 #endif
+#ifdef PS2_DRIVER
+    &playstation2_d,
+#endif
 #endif
     &stdout_d,
     &stderr_d,
     NULL
 };
-aa_context *aa_autoinit(struct aa_hardware_params *params)
+aa_context *aa_autoinit(__AA_CONST struct aa_hardware_params *params)
 {
     aa_context *context = NULL;
     int i = 0;

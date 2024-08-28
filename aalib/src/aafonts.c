@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "config.h"
 #include "aalib.h"
+#include "aaint.h"
 #define MAXFONTS 246
-struct aa_font *aa_fonts[MAXFONTS + 1] =
+__AA_CONST struct aa_font *aa_fonts[MAXFONTS + 1] =
 {
 #ifdef VYHEN_SUPPORT
     &aa_fontvyhen,
@@ -11,11 +12,11 @@ struct aa_font *aa_fonts[MAXFONTS + 1] =
     NULL
 };
 
-int aa_registerfont(struct aa_font *f)
+int aa_registerfont(__AA_CONST struct aa_font *f)
 {
     int i;
-    for (i = 0; i < 256 && aa_fonts[i] != NULL; i++);
-    if (i == 256)
+    for (i = 0; i < MAXFONTS && aa_fonts[i] != NULL; i++);
+    if (i == MAXFONTS)
 	return 0;
     aa_fonts[i] = f;
     aa_fonts[i + 1] = 0;

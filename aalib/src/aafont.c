@@ -9,7 +9,7 @@ static double DIMC,CONSTANT;
 #define canset(n,i) (!isset(n,i)&&isset(n-1,i))
 #define MUL 8
 
-static struct aa_font *currfont;
+__AA_CONST static struct aa_font *currfont;
 static void values(int c, int *v1, int *v2, int *v3, int *v4)
 {
     int i;
@@ -89,7 +89,7 @@ static void values(int c, int *v1, int *v2, int *v3, int *v4)
 	}
     }
 }
-void aa_calcparams(struct aa_font *font, struct parameters *parameters, int supported,double dimmul, double boldmul)
+void __aa_calcparams(__AA_CONST struct aa_font *font, struct parameters *parameters, int supported,double dimmul, double boldmul)
 {
     int i;
     int ma1 = 0, ma2 = 0, ma3 = 0, ma4 = 0, msum = 0;

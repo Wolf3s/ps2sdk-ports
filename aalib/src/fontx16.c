@@ -3,7 +3,7 @@
 #include "aalib.h"
 /* binary image of font8x16 follows */
 
-unsigned char fontX16data[] =
+__AA_CONST unsigned char fontX16data[] =
 {
 
     0x01,
@@ -424,5 +424,5 @@ unsigned char fontX16data[] =
     0x4c, 0x00, 0x00, 0xdc, 0x62, 0x42, 0x42, 0x42,
     0x42, 0x42, 0x42, 0xe7, 0x00, 0x00, 0x00,
 };
-struct aa_font aa_fontX16 =
+__AA_CONST struct aa_font aa_fontX16 =
 {fontX16data, 16, "Standard X 8x16 font", "X8x16"};

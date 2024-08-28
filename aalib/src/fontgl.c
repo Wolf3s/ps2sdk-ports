@@ -3,7 +3,7 @@
 /* binary image of font8x8 follows */
 
 
-unsigned char fontgldata[] =
+__AA_CONST unsigned char fontgldata[] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 126, 129, 165, 129, 189, 129, 126, 0,	/* 0 to 15 */
     126, 255, 219, 255, 195, 255, 126, 0, 54, 127, 127, 127, 62, 28, 8, 0,	/* 16 to 31 */
@@ -136,5 +136,5 @@ unsigned char fontgldata[] =
     0, 0, 60, 60, 60, 60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0	/* 2032 to 2047 */
 #endif
 };
-struct aa_font aa_fontgl =
+__AA_CONST struct aa_font aa_fontgl =
 {fontgldata, 8, "Font 8x8 from vgagl", "vgagl8"};
