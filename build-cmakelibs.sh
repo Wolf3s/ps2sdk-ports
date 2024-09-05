@@ -101,9 +101,7 @@ $FETCH feature/cmake https://github.com/mcmtroffaes/theora.git &
 $FETCH v4.6.0 https://gitlab.com/libtiff/libtiff.git &
 
 # SDL requires to have gsKit
-# We need to clone the whole repo and point to the specific hash for now,
-# till a new version is released after this commit
-$FETCH a08a0ca41a4ab54a7a34a2068fe04e7545cfd0ad https://github.com/Wolf3s/gsKit.git &
+$FETCH v1.3.8 https://github.com/ps2dev/gsKit &
 
 # We need to clone the whole repo and point to the specific hash for now,
 # till a new version is released after this commit
@@ -143,6 +141,10 @@ tar -xzf build/argtable2-13.tar.gz -C build
 pushd build/jsoncpp
 sed -i -e 's/std::snprintf/snprintf/' include/json/config.h
 popd
+
+###
+### Change to the build folder
+###
 cd build
 
 ##
@@ -170,8 +172,7 @@ build_ee jsoncpp -DBUILD_OBJECT_LIBS=OFF -DJSONCPP_WITH_TESTS=OFF -DJSONCPP_WITH
 build_ee theora
 
 # libtiff and libtiff_ps2_addons is mandatory for gsKit
-CFLAGS="-Dlfind=bsearch" build_ee libtiff -DBUILD_SHARED_LIBS=OFF -Dtiff-tools=OFF -Dtiff-tests=OFF
-make all install  -j -C ../libtiff_ps2_addons
+CFLAGS="-Dlfind=bsearch" build_ee libtiff -Dtiff-tools=OFF -Dtiff-tests=OFF
 
 # gsKit is mandatory for SDL
 build_ee gsKit
@@ -192,9 +193,10 @@ build_ee argtable3 -DARGTABLE3_INSTALL_CMAKEDIR="${PS2SDK}/ports/lib/cmake/" -DA
 build_ee libsmb2
 build_ee libsmb2 -DPS2RPC=1
 build_iop libsmb2
-build_irx libsmb2 -DBUILD_IRX=1
+# Disabling for now, as it has some issues with the IRX build in CPU with several cores
+# build_irx libsmb2 -DBUILD_IRX=1
 
-CFLAGS="-DHAVE_NEWLOCALE -DHAVE_USELOCALE -DHAVE_FREELOCALE" build_ee libconfig -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF
+CFLAGS="-DHAVE_NEWLOCALE -DHAVE_USELOCALE -DHAVE_FREELOCALE" build_ee libconfig -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 
 CFLAGS="-Darc4random_buf=random -DHAVE_GETRANDOM" build_ee libexpat/expat -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF -DEXPAT_SHARED_LIBS=OFF -DEXPAT_BUILD_TOOLS=OFF
 
