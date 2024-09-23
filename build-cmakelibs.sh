@@ -105,7 +105,7 @@ $FETCH v1.3.8 https://github.com/ps2dev/gsKit &
 
 # We need to clone the whole repo and point to the specific hash for now,
 # till a new version is released after this commit
-$FETCH 10c14e78b650e626293aa18155efec54cdee7098 https://github.com/libsdl-org/SDL.git &
+$FETCH release-2.30.7 https://github.com/libsdl-org/SDL.git &
 $FETCH release-2.6.3 https://github.com/libsdl-org/SDL_mixer.git &
 $FETCH release-2.6.3 https://github.com/libsdl-org/SDL_image.git &
 $FETCH release-2.20.2 https://github.com/libsdl-org/SDL_ttf.git &
