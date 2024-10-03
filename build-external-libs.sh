@@ -108,6 +108,7 @@ $FETCH 0e5b7443388095d919714cc5d9449d6afccd878e https://github.com/sezero/mikmod
 # We need to clone a fork, this is a PR opened for ading cmake support
 # https://github.com/xiph/theora/pull/14
 $FETCH feature/cmake https://github.com/mcmtroffaes/theora.git &
+$FETCH master https://github.com/ps2homebrew/isjpcm.git
 
 # gsKit requires libtiff
 $FETCH v4.7.0 https://gitlab.com/libtiff/libtiff.git &
@@ -118,7 +119,7 @@ $FETCH v1.3.8 https://github.com/ps2dev/gsKit &
 # We need to clone this version 2.30.8 with the hash specified, 
 # since the original release doesn´t conatin the patched timer code.
 $FETCH 2b2907db18484c4c41a6afa0972accd1c0e84237 https://github.com/libsdl-org/SDL.git &
-$FETCH ps2-ee-sans-glib https://github.com/Wolf3s/fluidsynth.git &
+$FETCH sans_glib https://github.com/DominusExult/fluidsynth-sans-glib.git &
 $FETCH release-2.6.3 https://github.com/libsdl-org/SDL_mixer.git &
 $FETCH release-2.8.2 https://github.com/libsdl-org/SDL_image.git &
 $FETCH release-2.22.0 https://github.com/libsdl-org/SDL_ttf.git &
@@ -133,6 +134,7 @@ $FETCH 7083138fd401faa391c4f829a86b50fdb9c5c727 https://github.com/lsalzman/enet
 
 # Use wget to download argtable2
 wget -c --directory-prefix=build  http://prdownloads.sourceforge.net/argtable/argtable2-13.tar.gz &
+wget -c --directory-prefix=build  https://prdownloads.sourceforge.net/mad/madplay/0.15.2b/madplay-0.15.2b.tar.gz &
 $FETCH v3.2.2.f25c624 https://github.com/argtable/argtable3.git &
 
 $FETCH v1.7.3 https://github.com/hyperrealm/libconfig.git &
@@ -159,6 +161,7 @@ wait
 
 # extract argtable2
 tar -xzf build/argtable2-13.tar.gz -C build
+tar -xzf build/madplay-0.15.2b.tar.gz -C build
 
 # NOTE: jsoncpp
 # "snprintf" not found in "std" namespace error may occur, so patch that out here.
@@ -182,6 +185,29 @@ popd
 
 pushd build/genromfs
 sed -i -e 's|install: all install-bin install-man|install: all|' Makefile
+popd
+
+pushd build/madplay-0.15.2b
+sed -i '/{ "hex",  audio_hex  },/i\{ "sjpcm",  audio_sjpcm  },' audio.c &&
+sed -i '/audio_ctlfunc_t audio_esd;/i\audio_ctlfunc_t audio_sjpcm;' audio.h &&
+sed -i -e 's|srand(time(0));|srand(0);|' player.c
+popd
+
+pushd build/fluidsynth-sans-glib
+sed -i -e 's|set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")|set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpthread -latomic")|' CMakeLists.txt &&
+sed -i '/if ( NOT BUILD_SHARED_LIBS )/,/endif ( NOT BUILD_SHARED_LIBS )/ s|file ( GLOB EXTRA_STATIC_MODULES .* )||' CMakeLists.txt &&
+sed -i '/if(NOT TARGET GLib2::glib-2 OR NOT TARGET GLib2::gthread-2)/,/endif()/d' FluidSynthConfig.cmake.in
+popd
+
+pushd build/zlib/contrib/minizip
+sed -i -e 's|lib_LTLIBRARIES = libminizip.la|lib_LTLIBRARIES = libunzip.la|' Makefile.am
+sed -i -e 's|libminizip_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0 -lz|libunzip_la_LDFLAGS = $(AM_LDFLAGS) -version-info 1:0:0 -lz|' Makefile.am
+sed -i -e 's|libminizip_la_SOURCES|libunzip_la_SOURCES|' Makefile.am
+sed -i '/    mztools.c/d' Makefile.am
+sed -i '/    zip.c/d' Makefile.am
+sed -i '/    crypt.h/d' Makefile.am
+sed -i '/    mztools.h/d' Makefile.am
+sed -i '/    zip.h/d' Makefile.am
 popd
 
 ###
@@ -212,7 +238,7 @@ build_ee libmodplug
 build_ee mikmod/libmikmod -DENABLE_SHARED=0 -DENABLE_DOC=OFF
 build_ee jsoncpp -DBUILD_OBJECT_LIBS=OFF -DJSONCPP_WITH_TESTS=OFF -DJSONCPP_WITH_POST_BUILD_UNITTEST=OFF
 build_ee theora
-
+make -C isjpcm all install
 # libtiff and libtiff_ps2_addons is mandatory for gsKit
 CFLAGS="-Dlfind=bsearch" build_ee libtiff -Dtiff-tools=OFF -Dtiff-tests=OFF
 
@@ -220,7 +246,7 @@ CFLAGS="-Dlfind=bsearch" build_ee libtiff -Dtiff-tools=OFF -Dtiff-tests=OFF
 build_ee gsKit
 # ps2_drivers is mandatory aswell for SDL
 make_ps2 ps2_drivers
-build_ee fluidsynth -Denable=aufile=OFF -DBUILD_SHARED_LIBS=OFF -Denable-dbus=OFF -Denable-ipv6=OFF -Denable-jack=OFF -Denable-libinstpatch=OFF -Denable-libsndfile=OFF -Denable-midishare=OFF -Denable-network=OFF -Denable-oss=OFF -Denable-oss=OFF -Denable-dsound=OFF -Denable-wasapi=OFF -Denable-waveout=OFF -Denable-winmidi=OFF -Denable-pulseaudio=OFF -Denable-pipewire=OFF -Denable-readline=OFF -Denable-threads=OFF -Denable-openmp=OFF
+build_ee fluidsynth-sans-glib -Denable=aufile=OFF -Denable-dbus=OFF -Denable-ipv6=OFF -Denable-jack=OFF -Denable-libinstpatch=OFF -Denable-libsndfile=OFF -Denable-midishare=OFF -Denable-network=OFF -Denable-oss=OFF -Denable-oss=OFF -Denable-dsound=OFF -Denable-wasapi=OFF -Denable-waveout=OFF -Denable-winmidi=OFF -Denable-pulseaudio=OFF -Denable-pipewire=OFF -Denable-readline=OFF -Denable-threads=OFF -Denable-openmp=OFF
 build_ee SDL -DCMAKE_POSITION_INDEPENDENT_CODE=OFF -DSDL_TESTS=OFF
 build_ee SDL_mixer -DCMAKE_POSITION_INDEPENDENT_CODE=OFF -DSDL2MIXER_DEPS_SHARED=OFF -DSDL2MIXER_MIDI_FLUIDSYNTH=ON -DSDL2MIXER_MIDI_TIMIDITY=ON -DSDL2MIXER_MOD_MODPLUG=ON -DSDLMIXER_MIDI_NATIVE=ON -DSDLMIXER_MOD_XMP=ON -DSDL2MIXER_FLAC=OFF -DSDL2MIXER_SAMPLES=OFF
 build_ee SDL_image -DCMAKE_POSITION_INDEPENDENT_CODE=OFF
@@ -243,21 +269,19 @@ build_iop libsmb2
 
 CFLAGS="-DHAVE_NEWLOCALE -DHAVE_USELOCALE -DHAVE_FREELOCALE" build_ee libconfig -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF
 
-CFLAGS="-DHAVE_NEWLOCALE -DHAVE_USELOCALE -DHAVE_FREELOCALE" build_ee libconfig -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_SHARED_LIBS=OFF
-
 CFLAGS="-Darc4random_buf=random -DHAVE_GETRANDOM" build_ee libexpat/expat -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TESTS=OFF -DEXPAT_SHARED_LIBS=OFF -DEXPAT_BUILD_TOOLS=OFF
 
-build_ee libmad -DBUILD_SHARED_LIBS=OFF 
-build_ee libid3tag -DBUILD_SHARED_LIBS=OFF 
+build_ee libmad
+build_ee libid3tag
 
 ##
 ## Build makefile projects
 ##
 make_ps2 ../aalib
-make_ps2 ../unzip
 make_ps2 ../romfs
 make_ps2 genromfs
 install -m755 genromfs/genromfs $PS2SDK/bin
+#make_ps2 ../madplay
 make_ps2 libtap platform=PS2
 make_ps2 lua platform=PS2
 make_ps2 ps2stuff

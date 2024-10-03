@@ -3,7 +3,7 @@ LIBS := \
 	libtimidity\
 	external_libs\
 	libjpeg_ps2_addons\
-	madplay\
+	libunzip\
 	romfs\
 	sdl\
 	sdlgfx\
@@ -61,12 +61,13 @@ libtimidity:
 	$(MAKE) -C build/$@ all
 	$(MAKE) -C build/$@ install
 
-libjpeg_ps2_addons: external_libs
-	$(MAKE) -C $@ all
-	$(MAKE) -C $@ install
+libunzip: external_libs
+	cd build/zlib/contrib/minizip && autoreconf -vfi
+	cd build/zlib/contrib/minizip && CFLAGS_FOR_TARGET="-G0 -O2 -gdwarf-2 -gz" ./configure --host=mips64r5900el-ps2-elf --prefix=${PS2SDK}/ports --disable-shared --enable-static
+	$(MAKE) -C build/zlib/contrib/minizip all CFLAGS="-DIOAPI_NO_64 -I$(PS2SDK)/ports/include"
+	$(MAKE) -C build/zlib/contrib/minizip install
 
-# depends on SjPCM sound library
-madplay: external_libs
+libjpeg_ps2_addons: external_libs
 	$(MAKE) -C $@ all
 	$(MAKE) -C $@ install
 
