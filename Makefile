@@ -3,7 +3,6 @@ LIBS := \
 	libtimidity\
 	external_libs\
 	libjpeg_ps2_addons\
-	madplay\
 	romfs\
 	sdl\
 	sdlgfx\
@@ -62,11 +61,6 @@ libtimidity:
 	$(MAKE) -C build/$@ install
 
 libjpeg_ps2_addons: external_libs
-	$(MAKE) -C $@ all
-	$(MAKE) -C $@ install
-
-# depends on SjPCM sound library
-madplay: external_libs
 	$(MAKE) -C $@ all
 	$(MAKE) -C $@ install
 
