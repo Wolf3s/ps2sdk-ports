@@ -138,7 +138,9 @@ $FETCH bf5f505d0156ad5c6635d05db06b1bb7593b45b7 https://gitlab.com/bzip2/bzip2.g
 
 $FETCH 184dac64cd556f435c309bb83ed4a31fe14e1cc5 https://github.com/libgme/game-music-emu.git &
 
-$FETCH 26.01 https://github.com/FNA-XNA/FAudio.git
+$FETCH 26.01 https://github.com/FNA-XNA/FAudio.git &
+
+$FETCH release-3.2.0 https://github.com/icculus/physfs.git &
 
 # wait for fetch jobs to finish
 wait
@@ -173,6 +175,12 @@ popd
 
 pushd build/SDL_net
 sed -i -e 's|#include <net/if.h>||' SDLnetsys.h
+popd
+
+pushd build/physfs
+sed -i -e 's|#elif defined(__EMSCRIPTEN__)|#elif defined(__EMSCRIPTEN__) || defined(__PS2__)|' physfs_platforms.h
+sed -i -e 's|#elif defined(__clang__) || (defined(__GNUC__) && (((__GNUC__ * 10000) + (__GNUC_MINOR__ * 100)) >= 40100))|
+#elif defined(__clang__) || (defined(__GNUC__) && (((__GNUC__ * 10000) + (__GNUC_MINOR__ * 100)) >= 40100)) && !defined(__PS2__)|' physfs_internal.h
 popd
 
 ###
@@ -249,6 +257,8 @@ build_ee bzip2 -DENABLE_LIBRARY=ON -DENABLE_STATIC_LIB=ON -DENABLE_SHARED_LIB=OF
 CFLAGS="-Wno-incompatible-pointer-types" build_ee FAudio -DBUILD_SDL3=OFF
 
 build_ee game-music-emu -DGME_BUILD_SHARED=OFF -DGME_ENABLE_UBSAN=OFF -DGME_BUILD_TESTING=OFF -DGME_BUILD_EXAMPLES=OFF
+
+build_ee physfs -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # Finish
 cd ..
